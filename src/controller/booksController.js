@@ -116,15 +116,15 @@ const getBooks = async function (req, res) {  //!----- testing ----
             }
         }
 
-        let book = await booksModel.find(obj).sort({title: 1}).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 })
+        let book = await booksModel.find(obj).select({ _id: 1, title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 })
         if (!book) {
             return res.status(400).send({ status: false, message: "Invalid request parameter, No such book present" })
         }
 
-       // let sortedByTitle = book.sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1)   //!---Ask Mentor---
+        let sortedByTitle = book.sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1)   //!---Ask Mentor---
 
 
-        res.status(200).send({ status: true, data: book })
+        res.status(200).send({ status: true, data: sortedByTitle })
     }
     catch (err) {
         res.status(500).send({ status: false, msg: err.message })
@@ -182,10 +182,10 @@ const updateBooks = async function (req, res) {
             return res.status(404).send({ status: false, message: `Book not found` })
         }
 
-        // if(blog.userId.toString() !== userIdFromToken) {
-        //     res.status(401).send({status: false, message: `Unauthorized access! Owner info doesn't match`});
-        //     return
-        // }
+        if(blog.userId.toString() !== userIdFromToken) {
+            res.status(401).send({status: false, message: `Unauthorized access! Owner info doesn't match`});
+            return
+        }
 
         if (!isValidRequestBody(requestBody)) {
             res.status(200).send({ status: true, message: 'No paramateres passed. book unmodified' })
